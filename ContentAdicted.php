@@ -39,7 +39,7 @@ class ContentAdicted extends TykeC
 	
 	public function __call($name, $params)
 	{
-		$cls_name = preg_replace('/\s/', '', ucwords(implode(' ', preg_split('/[_\-\s]+/', $name)))) . '_Action';
+		$cls_name = preg_replace('/\s/', '', ucwords(preg_replace('/[_\-\s]+/', ' ', $name))) . '_Action';
 		
 		if(!class_exists($cls_name, true))
 		{
