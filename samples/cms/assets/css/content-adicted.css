@@ -1,0 +1,108 @@
+@charset "utf-8";
+
+/* RESET */
+html,body,div,ul,ol,li,dl,dt,dd,h1,h2,h3,h4,h5,h6,pre,form,p,blockquote,fieldset,input { margin: 0; padding: 0; }
+h1,h2,h3,h4,h5,h6,pre,code,address,caption,cite,code,em,strong,th { font-size: 1em; font-weight: normal; font-style: normal; }
+ul,ol { list-style: none; }
+fieldset,img { border: none; }
+caption,th { text-align: left; }
+table { border-collapse: collapse; border-spacing: 0; }
+
+/* LAYOUT */
+.clear { clear:both; }
+.clearer { clear: both; display: block; margin: 0; padding: 0; height: 0; line-height: 1px; font-size: 1px; }
+
+.hide { display: none; }
+
+/* Screen */
+@media screen {
+	
+	/* Layout */
+	body { background-color: #1d1d20; }
+	a { color: #11428F; }
+	a:hover { color: #11428F; }
+	
+	#login { position: relative; background: #1d1d20 url(../gfx/login-bg.jpg) no-repeat top center; color: #fff; margin: 5em auto 1em; padding: 20px 0 0; width: 425px; _width: 390px; }
+	#login form { padding: 0 50px 25px; _width: 325px; _margin: 0 auto; min-height: 300px; height: auto !important; /* min-height fast hack */ height: 300px; }
+	#login #login_message { background-color: #3E3D42; border: 2px solid #84BE98; color: #EEEEEE; font-size: 0.7em; font-weight: bold; padding: .6em; width: 310px; margin: 0 50px; text-align: center; }
+	#login a { margin: 0 auto; height: 88px; width: 320px; display: block; border-bottom: none; text-indent: -9999px; }
+	#login input { padding: 4px; }
+	#login label { font-size: 0.8em; }
+	#login .input { font-size: 1.8em; margin-top: 3px; width: 97%; }
+	#login #submit { margin: 0; font-size: 15px; }
+	
+	#head { background: #1D1D20; padding: .8em 19em .8em 2em; color: #ECECEC; }
+	#head a { color: #ECECEC; }
+	#head h1 { font-size: 2em; font-weight: normal; letter-spacing: -.05em; margin: 0; }
+	#head a { text-decoration: none; }
+	
+	#messages_notify { background: #FAD658 url(../gfx/notice.png) no-repeat 1em; color: #444444; margin: 1em 5% 10px; padding: 1em 1em 1em 3em; }
+	#messages_accept { background: #ADEFA4 url(../gfx/accept.png) no-repeat 1em; color: #444444; margin: 1em 5% 10px; padding: 1em 1em 1em 3em; }
+	
+	#include { background: #FFFFFF; width: 100%; padding-bottom: 8px; }
+	.wrap { background: #FFFFFF; border: 1px solid #ccc; clear: both; margin: 15px 5%; padding: 1em; }
+	.wrap h2 { margin: 0 0 .5em; clear: both; }
+	* html .wrap h2 { margin-top: 1em; }
+		
+	#mainmenu { background: #33425c; border-top: 8px solid #2a2a2f; margin: 0; padding-left: 4em; }
+	#mainmenu li { display: inline; line-height: 200%; list-style: none; text-align: center; white-space: nowrap; }	
+	#mainmenu a { color: #FFFFFF; text-decoration: none; font-size: 1em; padding: 3px 5px; }	
+	#mainmenu a:hover { color: #EEEEEE; }	
+	#mainmenu a.current { background: #EEEEEE; color: #444444; font-weight: bold; padding-bottom: 8px; }
+	
+	#submenu { background: #EEEEEE; border-bottom: none; margin: 0; padding-left: 5em; }
+	#submenu li { display: inline; height: 25px; line-height: 200%; list-style: none; text-align: center; white-space: nowrap; }
+	#submenu a { border: none; color: #444444; font-size: 0.9em; text-decoration: none; padding: .3em .4em .4em; }
+	#submenu a:hover { color: #D15227; }
+	#submenu a.current { font-weight: bold; text-decoration: none; background-color: #FFFFFF; padding-bottom: 8px; }
+	
+	#minisub { background: #0d324f; border-bottom: none; margin: 0; padding: 3px 2em 0 3em; height: 6px; }
+	
+	#footer { background: #1d1d20; border-top: 8px solid #2a2a2f; font-size: 9px; color: #595965; padding: 15px 0; height: 1%; /*crazy ie7...*/ text-align: center; }
+	#footer a { color: #7389ae; }
+	#footer a:hover { color: #face8f; }
+	#footer a.copy { display: block; background: url(../gfx/vd-logo.gif) no-repeat bottom right; height: 43px; width: 54px; margin: 0 auto; }
+	#footer a.copy:hover { background-position: top right; }
+	
+	/* Typo */
+	* { font-family: "Lucida Grande", Geneva, Arial, Verdana, sans-serif; }
+	h2 { font-size: 2em; color: #78ba91; margin: 5px 10px; background: url(../gfx/heading-bg.gif) repeat-x bottom; }
+	
+	/* Form */
+	label { cursor: pointer; }
+	
+	.list { width: 100%; }
+	.list th { text-align: left; background-color: #D0D0D0; color: #444444; font-size: 0.8em; font-weight: bold; padding: 5px 30px; }
+	.list td { color: #7389ae; font-size: 1em; font-weight: bold; border-bottom: 1px solid #EEEEEE; padding: 15px 30px; }
+	.list a { color: #444444; margin-right: 10px; text-decoration: none; font-weight: normal; }
+	.list a:hover { color: #D15227; }
+	
+	fieldset { border: none; padding: 3px; }
+	fieldset label.selectit { display: block; font-size: 11px; padding: 0 2px; }
+	fieldset label.selectit:hover { background: #e9e9e9; }
+	fieldset legend { padding: .1em .3em; }
+	fieldset legend .description { font-size: 0.6em; }
+	fieldset.options { padding: 1em; }
+	fieldset.options legend { font-size: 1.5em; font-weight: bold; }
+	fieldset .image { background: #f4f4f4; border: 1px solid #b2b2b2; padding: 0.5em; margin-top: 10px; }
+	
+	input:focus, textarea:focus, label:focus { background: #fff; border: 1px solid #686868; }
+	textarea, input, select, .fckeditor { background: #f4f4f4; border: 1px solid #b2b2b2; color: #000; font-size: 1.1em; margin: 1px; padding: 3px; width: 100%; }
+	
+	.submit input, .submit input:focus, .button, .button:focus { background: url(../gfx/fade-butt.png); font-size: 0.8em; width: auto; cursor: pointer; border: 3px double #999; border-left-color: #ccc; border-top-color: #ccc; color: #333; padding: 0.5em; margin-top: 10px; }
+	.submit input:active, .button:active { background: #f4f4f4; border: 3px double #ccc; border-left-color: #999; border-top-color: #999; }
+	/* .button, .button:focus { padding: 0.15em; } */
+	* html .button { padding: 0; }
+	.submit, .editform th, #postcustomsubmit { text-align: right; }
+	input#submit { font-weight: bold; }
+	
+	.radiogroup { background: #f4f4f4; border: 1px solid #b2b2b2; padding: 10px; float: left; text-align: left; margin: 0.5em;  margin-left: 0em; }
+	.radiogroup input { width: auto; float: left; margin-right: 0.5em; margin-top: 0.2em; border: none; }
+	.radiogroup label { width: auto; float: left; margin-right: 1em; color: #000; font-size: 1.1em; }
+	
+	#upload-status .current-text { display: none; }
+	#upload-status .upload-progress { background: #f4f4f4; border: 1px solid #b2b2b2; padding: 10px; padding-top: 9px; padding-bottom: 9px; font-size: 0.8em; color: #333; }
+	#upload-status .progress { background: white url(../gfx/progress-bar-progress.gif) no-repeat; background-position: +50% 0; margin-left: 0.5em; margin-right: 0.5em; }
+	#upload-status #upload-list * { font-size: 0.8em; color: #33425C; padding: 2px; }
+	#upload-list .file-size, #upload-list .file-remove { display: none; }
+}
