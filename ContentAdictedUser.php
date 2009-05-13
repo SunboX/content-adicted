@@ -2,11 +2,11 @@
 /**
  * content adicted nano Framework
  *
- * @author 		André Fiedler <kontakt at visualdrugs dot net>
- * @link 		http://www.visualdrugs.net/
- * @copyright 	2007 - 2009 André Fiedler.
- * @license     MIT License
- * @version 	1.0
+ * @author     André Fiedler <kontakt at visualdrugs dot net>
+ * @link       http://github.com/SunboX/content-adicted/tree
+ * @copyright  2007 - 2009 André Fiedler.
+ * @license    MIT License
+ * @version    1.0
  */
 
 class ContentAdictedUser
@@ -14,8 +14,9 @@ class ContentAdictedUser
 	public function __construct()
 	{
 		session_name(ContentAdicted::get('core.session_name', 'SID'));
-		if(isset($_POST[ContentAdicted::get('core.session_name', 'SID')]))
-			session_id($_POST[ContentAdicted::get('core.session_name', 'SID')]);
+		$_REQUEST = array_merge($_POST, $_GET);
+		if(isset($_REQUEST[ContentAdicted::get('core.session_name', 'SID')]))
+			session_id($_REQUEST[ContentAdicted::get('core.session_name', 'SID')]);
 		@session_start();
 
 		if(!is_array($_SESSION['core.user.messages.success']))

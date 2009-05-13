@@ -2,11 +2,11 @@
 /**
  * content adicted CMS
  *
- * @author 		André Fiedler <kontakt at visualdrugs dot net>
- * @link 		http://www.visualdrugs.net/
- * @copyright 	2007 - 2009 André Fiedler.
- * @license     MIT License
- * @version 	1.1
+ * @author 	   AndrÃ© Fiedler <kontakt at visualdrugs dot net>
+ * @link 	   http://www.visualdrugs.net/
+ * @copyright  2007 - 2009 AndrÃ© Fiedler.
+ * @license    MIT License
+ * @version    1.1
  */
 
 class Util

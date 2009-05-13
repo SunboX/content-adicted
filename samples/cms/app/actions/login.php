@@ -2,11 +2,11 @@
 /**
  * content adicted CMS
  *
- * @author 		André Fiedler <kontakt at visualdrugs dot net>
- * @link 		http://www.visualdrugs.net/
- * @copyright 	2007 - 2009 André Fiedler.
- * @license     MIT License
- * @version 	2.0
+ * @author     AndrÃ© Fiedler <kontakt at visualdrugs dot net>
+ * @link       http://github.com/SunboX/content-adicted/tree
+ * @copyright  2007 - 2009 AndrÃ© Fiedler.
+ * @license    MIT License
+ * @version    2.0
  */
 
 class Login_Action implements IContentAdictedAction
