@@ -14,9 +14,9 @@ class ContentAdictedUser
 	public function __construct()
 	{
 		session_name(ContentAdicted::get('core.session_name', 'SID'));
-		$_REQUEST = array_merge($_POST, $_GET);
-		if(isset($_REQUEST[ContentAdicted::get('core.session_name', 'SID')]))
-			session_id($_REQUEST[ContentAdicted::get('core.session_name', 'SID')]);
+		$rd = array_merge($_POST, $_GET);
+		if(isset($rd[ContentAdicted::get('core.session_name', 'SID')]))
+			session_id($rd[ContentAdicted::get('core.session_name', 'SID')]);
 		@session_start();
 
 		if(!is_array($_SESSION['core.user.messages.success']))
