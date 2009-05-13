@@ -9,7 +9,7 @@ It enables developers to write clean, maintainable and extensible code.
 Minimum Requirements
 ---
 
-Content adicted requires PHP 5.2.x, although it doesn't require any external libraries.
+Content adicted requires PHP 5.2.x, although it doesn't require any external libraries (except Tyke).
 For database function call abstraction content adicted uses PDO which comes bundled with PHP5.
 You can easily extend content adicted to use any other database handler that fit your needs.
 
