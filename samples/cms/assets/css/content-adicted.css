@@ -91,18 +91,7 @@ table { border-collapse: collapse; border-spacing: 0; }
 	
 	.submit input, .submit input:focus, .button, .button:focus { background: url(../gfx/fade-butt.png); font-size: 0.8em; width: auto; cursor: pointer; border: 3px double #999; border-left-color: #ccc; border-top-color: #ccc; color: #333; padding: 0.5em; margin-top: 10px; }
 	.submit input:active, .button:active { background: #f4f4f4; border: 3px double #ccc; border-left-color: #999; border-top-color: #999; }
-	/* .button, .button:focus { padding: 0.15em; } */
 	* html .button { padding: 0; }
 	.submit, .editform th, #postcustomsubmit { text-align: right; }
 	input#submit { font-weight: bold; }
-	
-	.radiogroup { background: #f4f4f4; border: 1px solid #b2b2b2; padding: 10px; float: left; text-align: left; margin: 0.5em;  margin-left: 0em; }
-	.radiogroup input { width: auto; float: left; margin-right: 0.5em; margin-top: 0.2em; border: none; }
-	.radiogroup label { width: auto; float: left; margin-right: 1em; color: #000; font-size: 1.1em; }
-	
-	#upload-status .current-text { display: none; }
-	#upload-status .upload-progress { background: #f4f4f4; border: 1px solid #b2b2b2; padding: 10px; padding-top: 9px; padding-bottom: 9px; font-size: 0.8em; color: #333; }
-	#upload-status .progress { background: white url(../gfx/progress-bar-progress.gif) no-repeat; background-position: +50% 0; margin-left: 0.5em; margin-right: 0.5em; }
-	#upload-status #upload-list * { font-size: 0.8em; color: #33425C; padding: 2px; }
-	#upload-list .file-size, #upload-list .file-remove { display: none; }
 }

@@ -10,11 +10,6 @@
     <link rel="stylesheet" type="text/css" href="<?= ContentAdicted::get('core.run.basepath') ?>/assets/css/content-adicted.css" />
     
     <script type="text/javascript" src="<?= ContentAdicted::get('core.run.basepath') ?>/assets/javascript/mootools-core.js"></script>
-    <script type="text/javascript" src="<?= ContentAdicted::get('core.run.basepath') ?>/assets/javascript/mootools-more.js"></script>
-    
-    <script type="text/javascript" src="<?= ContentAdicted::get('core.run.basepath') ?>/assets/javascript/Fx.ProgressBar.js"></script>
-    <script type="text/javascript" src="<?= ContentAdicted::get('core.run.basepath') ?>/assets/javascript/Swiff.Uploader.js"></script>
-    <script type="text/javascript" src="<?= ContentAdicted::get('core.run.basepath') ?>/assets/javascript/FancyUpload2.js"></script>
 
 </head>
 <body>
