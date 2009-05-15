@@ -21,20 +21,20 @@
     </fieldset>
     
     <fieldset><legend>Text</legend>
-        <script type="text/javascript" src="<?= ContentAdicted::get('core.run.basepath') ?>/assets/fckeditor/fckeditor.js"></script>
-        <script type="text/javascript">
         
-        window.addEvent('domready', function()
-        {
-            var oFCKeditor = new FCKeditor('text');
-            oFCKeditor.ToolbarSet = 'Basic';
-            oFCKeditor.BasePath = '<?= ContentAdicted::get('core.run.basepath') ?>/assets/fckeditor/';
-            oFCKeditor.Height	= 300 ;
-            oFCKeditor.ReplaceTextarea();
-        });
+		<script type="text/javascript">
+		//<![CDATA[
+			window.addEvent('load', function()
+			{
+				$('news-text').mooEditable(
+				{
+					actions: 'bold italic underline strikethrough | insertunorderedlist insertorderedlist | undo redo | createlink unlink '
+				});
+			});
+		//]]>
+		</script>
         
-        </script>
-        <div><textarea name="text" rows="10" tabindex="2"><?= $template['news']['text'] ?></textarea></div>
+        <div><textarea name="text" id="news-text" rows="10" tabindex="2"><?= $template['news']['text'] ?></textarea></div>
     </fieldset>
     
     <p class="submit"><input type="submit" name="submit" tabindex="3" value="Speichern" /></p>

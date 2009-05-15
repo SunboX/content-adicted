@@ -8,8 +8,10 @@
     <link rel="shortcut icon" href="<?= ContentAdicted::get('core.run.basepath') ?>/assets/gfx/favicon.ico" type="image/x-icon" />
     
     <link rel="stylesheet" type="text/css" href="<?= ContentAdicted::get('core.run.basepath') ?>/assets/css/content-adicted.css" />
+    <link rel="stylesheet" type="text/css" href="<?= ContentAdicted::get('core.run.basepath') ?>/assets/css/MooEditable.css">
     
     <script type="text/javascript" src="<?= ContentAdicted::get('core.run.basepath') ?>/assets/javascript/mootools-core.js"></script>
+    <script type="text/javascript" src="<?= ContentAdicted::get('core.run.basepath') ?>/assets/javascript/MooEditable.js"></script>
 
 </head>
 <body>
