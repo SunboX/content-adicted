@@ -113,9 +113,9 @@ class ContentAdicted extends TykeC
 		$this->template[$name] = $value;
 	}
 	
-	public function getAttribute($name)
+	public function getAttribute($name, $default = null)
 	{
-		return isset($this->template[$name]) ? $this->template[$name] : null;
+		return isset($this->template[$name]) ? $this->template[$name] : $default;
 	}
 	
 	public function hasAttribute($name)
