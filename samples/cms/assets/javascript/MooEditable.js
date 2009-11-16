@@ -1,29 +1,50 @@
 /*
-Script: MooEditable.js
-	Class for creating a WYSIWYG editor, for contentEditable-capable browsers.
+---
 
-License:
-	MIT-style license.
+script: MooEditable.js
 
-Copyright:
-	Copyright (c) 2007-2009 [Lim Chee Aun](http://cheeaun.com).
-	
-Build: %build%
+description: Class for creating a WYSIWYG editor, for contentEditable-capable browsers.
 
-Credits:
-	- Code inspired by Stefan's work [Safari Supports Content Editing!](http://www.xs4all.nl/~hhijdra/stefan/ContentEditable.html) from [safari gets contentEditable](http://walkah.net/blog/walkah/safari-gets-contenteditable)
-	- Main reference from Peter-Paul Koch's [execCommand compatibility](http://www.quirksmode.org/dom/execCommand.html)
-	- Some ideas and code inspired by [TinyMCE](http://tinymce.moxiecode.com/)
-	- Some functions inspired by Inviz's [Most tiny wysiwyg you ever seen](http://forum.mootools.net/viewtopic.php?id=746), [mooWyg (Most tiny WYSIWYG 2.0)](http://forum.mootools.net/viewtopic.php?id=5740)
-	- Some regex from Cameron Adams's [widgEditor](http://widgeditor.googlecode.com/)
-	- Some code from Juan M Martinez's [jwysiwyg](http://jwysiwyg.googlecode.com/)
-	- Some reference from MoxieForge's [PunyMCE](http://punymce.googlecode.com/)
-	- IE support referring Robert Bredlau's [Rich Text Editing](http://www.rbredlau.com/drupal/node/6)
-	- Tango icons from the [Tango Desktop Project](http://tango.freedesktop.org/)
-	- Additional Tango icons from Jimmacs' [Tango OpenOffice](http://www.gnome-look.org/content/show.php/Tango+OpenOffice?content=54799)
+license: MIT-style license
+
+authors:
+- Lim Chee Aun
+- Radovan Lozej
+- Ryan Mitchell
+- Olivier Refalo
+- T.J. Leahy
+
+requires:
+- core:1.2.4/Events
+- core:1.2.4/Options
+- core:1.2.4/Element.Event
+- core:1.2.4/Element.Style
+- core:1.2.4/Element.Dimensions
+- core:1.2.4/Selectors
+
+inspiration:
+- Code inspired by Stefan's work [Safari Supports Content Editing!](http://www.xs4all.nl/~hhijdra/stefan/ContentEditable.html) from [safari gets contentEditable](http://walkah.net/blog/walkah/safari-gets-contenteditable)
+- Main reference from Peter-Paul Koch's [execCommand compatibility](http://www.quirksmode.org/dom/execCommand.html)
+- Some ideas and code inspired by [TinyMCE](http://tinymce.moxiecode.com/)
+- Some functions inspired by Inviz's [Most tiny wysiwyg you ever seen](http://forum.mootools.net/viewtopic.php?id=746), [mooWyg (Most tiny WYSIWYG 2.0)](http://forum.mootools.net/viewtopic.php?id=5740)
+- Some regex from Cameron Adams's [widgEditor](http://widgeditor.googlecode.com/)
+- Some code from Juan M Martinez's [jwysiwyg](http://jwysiwyg.googlecode.com/)
+- Some reference from MoxieForge's [PunyMCE](http://punymce.googlecode.com/)
+- IE support referring Robert Bredlau's [Rich Text Editing](http://www.rbredlau.com/drupal/node/6)
+- Tango icons from the [Tango Desktop Project](http://tango.freedesktop.org/)
+- Additional Tango icons from Jimmacs' [Tango OpenOffice](http://www.gnome-look.org/content/show.php/Tango+OpenOffice?content=54799)
+
+provides: [MooEditable, MooEditable.Selection, MooEditable.UI, MooEditable.Actions]
+
+...
 */
 
-var MooEditable = new Class({
+(function(){
+	
+var blockEls = /^(H[1-6]|HR|P|DIV|ADDRESS|PRE|FORM|TABLE|LI|OL|UL|TD|CAPTION|BLOCKQUOTE|CENTER|DL|DT|DD)$/i;
+var urlRegex = /^(https?|ftp|rmtp|mms):\/\/(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)(:(\d+))?\/?/i;
+
+this.MooEditable = new Class({
 
 	Implements: [Events, Options],
 
@@ -36,18 +57,11 @@ var MooEditable = new Class({
 		actions: 'bold italic underline strikethrough | insertunorderedlist insertorderedlist indent outdent | undo redo | createlink unlink | urlimage | toggleview',
 		handleSubmit: true,
 		handleLabel: true,
-		baseCSS: 'html{ height: 100%; cursor: text }\
-			body{ font-family: sans-serif; border: 0; }',
+		baseCSS: 'html{ height: 100%; cursor: text; } body{ font-family: sans-serif; }',
 		extraCSS: '',
 		externalCSS: '',
-		html: '<html>\
-			<head>\
-			<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">\
-			<style>{BASECSS} {EXTRACSS}</style>\
-			{EXTERNALCSS}\
-			</head>\
-			<body>{CONTENT}</body>\
-			</html>'
+		html: '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style>{BASECSS} {EXTRACSS}</style>{EXTERNALCSS}</head><body>{CONTENT}</body></html>',
+		rootElement: 'p'
 	},
 
 	initialize: function(el, options){
@@ -106,6 +120,8 @@ var MooEditable = new Class({
 		// Build the iframe
 		this.iframe = new IFrame({
 			'class': 'mooeditable-iframe',
+			frameBorder: 0,
+			src: 'javascript:""', // Workaround for HTTPs warning in IE6/7
 			styles: {
 				height: dimensions.y
 			}
@@ -118,7 +134,7 @@ var MooEditable = new Class({
 				self.action(item.name, args);
 			}
 		});
-		this.attach();
+		this.attach.delay(1, this);
 		
 		// Update the event for textarea's corresponding labels
 		if (this.options.handleLabel && this.textarea.id) $$('label[for="'+this.textarea.id+'"]').addEvent('click', function(e){
@@ -257,7 +273,7 @@ var MooEditable = new Class({
 		
 		if (this.options.toolbar) this.checkStates();
 		
-		this.fireEvent('editorMouseUp', e);
+		this.fireEvent('editorMouseUp', [e, this]);
 	},
 	
 	editorMouseDown: function(e){
@@ -266,7 +282,7 @@ var MooEditable = new Class({
 			return;
 		}
 		
-		this.fireEvent('editorMouseDown', e);
+		this.fireEvent('editorMouseDown', [e, this]);
 	},
 	
 	editorContextMenu: function(e){
@@ -275,7 +291,7 @@ var MooEditable = new Class({
 			return;
 		}
 		
-		this.fireEvent('editorContextMenu', e);
+		this.fireEvent('editorContextMenu', [e, this]);
 	},
 	
 	editorClick: function(e){
@@ -287,11 +303,11 @@ var MooEditable = new Class({
 			}
 		}
 		
-		this.fireEvent('editorClick', e);
+		this.fireEvent('editorClick', [e, this]);
 	},
 	
 	editorDoubleClick: function(e){
-		this.fireEvent('editorDoubleClick', e);
+		this.fireEvent('editorDoubleClick', [e, this]);
 	},
 	
 	editorKeyPress: function(e){
@@ -302,7 +318,7 @@ var MooEditable = new Class({
 		
 		this.keyListener(e);
 		
-		this.fireEvent('editorKeyPress', e);
+		this.fireEvent('editorKeyPress', [e, this]);
 	},
 	
 	editorKeyUp: function(e){
@@ -311,9 +327,18 @@ var MooEditable = new Class({
 			return;
 		}
 		
-		if (this.options.toolbar) this.checkStates();
+		var c = e.code;
+		// 33-36 = pageup, pagedown, end, home; 45 = insert
+		if (this.options.toolbar && (/^enter|left|up|right|down|delete|backspace$/i.test(e.key) || (c >= 33 && c <= 36) || c == 45 || e.meta || e.control)){
+			if (Browser.Engines.trident4){ // Delay for less cpu usage when you are typing
+				$clear(this.checkStatesDelay);
+				this.checkStatesDelay = this.checkStates.delay(500, this);
+			} else {
+				this.checkStates();
+			}
+		}
 		
-		this.fireEvent('editorKeyUp', e);
+		this.fireEvent('editorKeyUp', [e, this]);
 	},
 	
 	editorKeyDown: function(e){
@@ -353,7 +378,6 @@ var MooEditable = new Class({
 					e.preventDefault();
 				} else if (Browser.Engine.gecko || Browser.Engine.webkit){
 					var node = this.selection.getNode();
-					var blockEls = /^(H[1-6]|P|DIV|ADDRESS|PRE|FORM|TABLE|LI|OL|UL|TD|CAPTION|BLOCKQUOTE|CENTER|DL|DT|DD)$/;
 					var isBlock = node.getParents().include(node).some(function(el){
 						return el.nodeName.test(blockEls);
 					});
@@ -372,7 +396,7 @@ var MooEditable = new Class({
 			}
 		}
 		
-		this.fireEvent('editorKeyDown', e);
+		this.fireEvent('editorKeyDown', [e, this]);
 	},
 	
 	keyListener: function(e){
@@ -384,11 +408,8 @@ var MooEditable = new Class({
 	},
 
 	focus: function(){
-		// needs the delay to get focus working
-		(function(){ 
-			(this.mode == 'iframe' ? this.win : this.textarea).focus();
-			this.fireEvent('focus', this);
-		}).bind(this).delay(10);
+		(this.mode == 'iframe' ? this.win : this.textarea).focus();
+		this.fireEvent('focus', this);
 		return this;
 	},
 
@@ -426,7 +447,7 @@ var MooEditable = new Class({
 			this.iframe.setStyle('display', 'none');
 		}
 		this.fireEvent('toggleView', this);
-		this.focus();
+		this.focus.delay(10, this);
 		return this;
 	},
 
@@ -435,16 +456,65 @@ var MooEditable = new Class({
 	},
 
 	setContent: function(newContent){
-		this.doc.body.set('html', newContent);
+		this.doc.body.set('html', this.ensureRootElement(newContent));
 		return this;
 	},
 
 	saveContent: function(){
-		if (this.mode == 'iframe') this.textarea.set('value', this.getContent());
+		if (this.mode == 'iframe'){
+			this.textarea.set('value', this.ensureRootElement(this.getContent()));
+		}
 		return this;
+	},
+	
+	ensureRootElement: function(val){
+		if (this.options.rootElement){
+			var el = new Element('div', {html: val.trim()});
+			var start = -1;
+			var create = false;
+			var html = '';
+			var length = el.childNodes.length;
+			for (i=0; i<length; i++){
+				var childNode = el.childNodes[i];
+				var nodeName = childNode.nodeName;
+				if (!nodeName.test(blockEls) && nodeName !== '#comment'){
+					if (nodeName === '#text'){
+						if (childNode.nodeValue.trim()){
+							if (start < 0) start = i;
+							html += childNode.nodeValue;
+						}
+					} else {
+						if (start < 0) start = i;
+						html += new Element('div').adopt($(childNode).clone()).get('html');
+					}
+				} else {
+					create = true;
+				}
+				if (i == (length-1)) create = true;
+				if (start >= 0 && create){
+					var newel = new Element(this.options.rootElement, {html: html});
+					el.replaceChild(newel, el.childNodes[start]);
+					for (k=start+1; k<=i; k++){ 
+						el.removeChild(el.childNodes[k]);
+						length--;
+						i--;
+						k--;
+					}
+					start = -1;
+					create = false;
+					html = '';
+				}
+			}
+			val = el.get('html').replace(/\n\n/g, '');
+		}
+		return val;
 	},
 
 	checkStates: function(){
+		var element = this.selection.getNode();
+		if (!element) return;
+		if ($type(element) != 'element') return;
+		
 		this.actions.each(function(action){
 			var item = this.toolbar.getItem(action);
 			if (!item) return;
@@ -453,12 +523,9 @@ var MooEditable = new Class({
 			var states = MooEditable.Actions[action]['states'];
 			if (!states) return;
 			
-			var el = this.selection.getNode();
-			if (!el) return;
-			
 			// custom checkState
 			if ($type(states) == 'function'){
-				states.attempt(el, item);
+				states.attempt([document.id(element), item], this);
 				return;
 			}
 			
@@ -467,35 +534,34 @@ var MooEditable = new Class({
 					item.activate();
 					return;
 				}
-			} catch(e) {}
+			} catch(e){}
 			
 			if (states.tags){
+				var el = element;
 				do {
-					if ($type(el) != 'element') break;
 					var tag = el.tagName.toLowerCase();
 					if (states.tags.contains(tag)){
 						item.activate(tag);
 						break;
 					}
 				}
-				while (el = el.parentNode);
+				while ((el = Element.getParent(el)) != null);
 			}
 
 			if (states.css){
-				var blockEls = /^(H[1-6]|P|DIV|ADDRESS|PRE|FORM|TABLE|LI|OL|UL|TD|CAPTION|BLOCKQUOTE|CENTER|DL|DT|DD)$/;
+				var el = element;
 				do {
-					if ($type(el) != 'element') break;
 					var found = false;
 					for (var prop in states.css){
 						var css = states.css[prop];
-						if (document.id(el).getStyle(prop).contains(css)){
+						if (Element.getStyle(el, prop).contains(css)){
 							item.activate(css);
 							found = true;
 						}
 					}
 					if (found || el.tagName.test(blockEls)) break;
 				}
-				while (el = el.parentNode);
+				while ((el = Element.getParent(el)) != null);
 			}
 		}.bind(this));
 	},
@@ -542,16 +608,16 @@ var MooEditable = new Class({
 					source = source.replace(/<\/(ol|ul)>\s*(?!<(?:p|ol|ul|img).*?>)((?:<[^>]*>)?\w.*)$/g, '</$1><p>$2</p>');
 				}
 
-				source = source.replace(/<br[^>]*><\/p>/g, '</p>');			//remove <br>'s that end a paragraph here.
-				source = source.replace(/<p>\s*(<img[^>]+>)\s*<\/p>/ig, '$1\n'); 	//if a <p> only contains <img>, remove the <p> tags
+				source = source.replace(/<br[^>]*><\/p>/g, '</p>'); // remove <br>'s that end a paragraph here.
+				source = source.replace(/<p>\s*(<img[^>]+>)\s*<\/p>/ig, '$1\n'); // if a <p> only contains <img>, remove the <p> tags
 
 				//format the source
-				source = source.replace(/<p([^>]*)>(.*?)<\/p>(?!\n)/g, '<p$1>$2</p>\n');  	//break after paragraphs
-				source = source.replace(/<\/(ul|ol|p)>(?!\n)/g, '</$1>\n'); 			//break after </p></ol></ul> tags
-				source = source.replace(/><li>/g, '>\n\t<li>'); 				//break and indent <li>
-				source = source.replace(/([^\n])<\/(ol|ul)>/g, '$1\n</$2>');  			//break before </ol></ul> tags
-				source = source.replace(/([^\n])<img/ig, '$1\n<img'); 				//move images to their own line
-				source = source.replace(/^\s*$/g, '');						//delete empty lines in the source code (not working in opera)
+				source = source.replace(/<p([^>]*)>(.*?)<\/p>(?!\n)/g, '<p$1>$2</p>\n'); // break after paragraphs
+				source = source.replace(/<\/(ul|ol|p)>(?!\n)/g, '</$1>\n'); // break after </p></ol></ul> tags
+				source = source.replace(/><li>/g, '>\n\t<li>'); // break and indent <li>
+				source = source.replace(/([^\n])<\/(ol|ul)>/g, '$1\n</$2>'); //break before </ol></ul> tags
+				source = source.replace(/([^\n])<img/ig, '$1\n<img'); // move images to their own line
+				source = source.replace(/^\s*$/g, ''); // delete empty lines in the source code (not working in opera)
 			}
 
 			// Remove leading and trailing BRs
@@ -570,6 +636,11 @@ var MooEditable = new Class({
 			source = source.replace(/<b\b[^>]*>(.*?)<\/b[^>]*>/gi, '<strong>$1</strong>');
 			source = source.replace(/<i\b[^>]*>(.*?)<\/i[^>]*>/gi, '<em>$1</em>');
 			source = source.replace(/<u\b[^>]*>(.*?)<\/u[^>]*>/gi, '<span style="text-decoration: underline;">$1</span>');
+			source = source.replace(/<strong><span style="font-weight: normal;">(.*)<\/span><\/strong>/gi, '$1');
+			source = source.replace(/<em><span style="font-weight: normal;">(.*)<\/span><\/em>/gi, '$1');
+			source = source.replace(/<span style="text-decoration: underline;"><span style="font-weight: normal;">(.*)<\/span><\/span>/gi, '$1');
+			source = source.replace(/<strong style="font-weight: normal;">(.*)<\/strong>/gi, '$1');
+			source = source.replace(/<em style="font-weight: normal;">(.*)<\/em>/gi, '$1');
 
 			// Replace uppercase element names with lowercase
 			source = source.replace(/<[^> ]*/g, function(match){return match.toLowerCase();});
@@ -586,15 +657,19 @@ var MooEditable = new Class({
 				   return match;
 			});
 
-			//make img tags xhtml compatable
-			//           if (this.options.xhtml){
-			//                source = source.replace(/(<(?:img|input)[^/>]*)>/g, '$1 />');
-			//           }
-
+			//make img tags xhtml compatible <img>,<img></img> -> <img/>
+			if (this.options.xhtml){
+				source = source.replace(/<img([^>]+)(\s*[^\/])>(<\/img>)*/gi, '<img$1$2 />');
+			}
+			
 			//remove double <p> tags and empty <p> tags
 			source = source.replace(/<p>(?:\s*)<p>/g, '<p>');
 			source = source.replace(/<\/p>\s*<\/p>/g, '</p>');
-			source = source.replace(/<p>\W*<\/p>/g, '');
+			
+			// Replace <br>s inside <pre> automatically added by some browsers
+			source = source.replace(/<pre>.*?<\/pre>/gi, function(match){
+				return match.replace(/<br ?\/?>/gi, '\n');
+			});
 
 			// Final trim
 			source = source.trim();
@@ -703,8 +778,7 @@ MooEditable.Selection = new Class({
 	getText : function(){
 		var r = this.getRange();
 		var s = this.getSelection();
-
-		return this.isCollapsed() ? '' : r.text || s.toString();
+		return this.isCollapsed() ? '' : r.text || (s.toString ? s.toString() : '');
 	},
 
 	getNode: function(){
@@ -1019,7 +1093,7 @@ MooEditable.UI.PromptDialog = function(questionText, answerText, fn){
 		onOpen: function(){
 			var input = this.el.getElement('.dialog-input');
 			(function(){
-				input.focus()
+				input.focus();
 				input.select();
 			}).delay(10);
 		},
@@ -1051,6 +1125,25 @@ MooEditable.Actions = new Hash({
 		states: {
 			tags: ['b', 'strong'],
 			css: {'font-weight': 'bold'}
+		},
+		events: {
+			beforeToggleView: function(){
+				if(Browser.Engine.gecko){
+					var s = this.textarea.get('value')
+					.replace(/<strong([^>]*)>/gi, '<b$1>')
+					.replace(/<\/strong>/gi, '</b>')
+					this.textarea.set('value',s);
+				}
+			},
+			attach: function(){
+				if(Browser.Engine.gecko){
+					var s = this.textarea.get('value')
+					.replace(/<strong([^>]*)>/gi, '<b$1>')
+					.replace(/<\/strong>/gi, '</b>')
+					this.textarea.set('value',s);
+					this.setContent(s);
+				}
+			}
 		}
 	},
 	
@@ -1062,6 +1155,29 @@ MooEditable.Actions = new Hash({
 		states: {
 			tags: ['i', 'em'],
 			css: {'font-style': 'italic'}
+		},
+		events: {
+			beforeToggleView: function(){
+				if (Browser.Engine.gecko){
+					var s = this.textarea.get('value')
+						.replace(/<embed([^>]*)>/gi, '<tmpembed$1>')
+						.replace(/<em([^>]*)>/gi, '<i$1>')
+						.replace(/<tmpembed([^>]*)>/gi, '<embed$1>')
+						.replace(/<\/em>/gi, '</i>');
+					this.textarea.set('value', s);
+				}
+			},
+			attach: function(){
+				if (Browser.Engine.gecko){
+					var s = this.textarea.get('value')
+						.replace(/<embed([^>]*)>/gi, '<tmpembed$1>')
+						.replace(/<em([^>]*)>/gi, '<i$1>')
+						.replace(/<tmpembed([^>]*)>/gi, '<embed$1>')
+						.replace(/<\/em>/gi, '</i>');
+					this.textarea.set('value', s);
+					this.setContent(s);
+				}
+			}
 		}
 	},
 	
@@ -1151,9 +1267,8 @@ MooEditable.Actions = new Hash({
 				this.dialogs.createlink.alert.open();
 			} else {
 				var text = this.selection.getText();
-				var url = /^(https?|ftp|rmtp|mms):\/\/(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)(:(\d+))?\/?/i;
 				var prompt = this.dialogs.createlink.prompt;
-				if (url.test(text)) prompt.el.getElement('.mooeditable-dialog-input').set('value', text);
+				if (urlRegex.test(text)) prompt.el.getElement('.dialog-input').set('value', text);
 				prompt.open();
 			}
 		}
@@ -1186,6 +1301,8 @@ MooEditable.Actions = new Hash({
 
 });
 
+MooEditable.Actions.Settings = {};
+
 Element.Properties.mooeditable = {
 
 	set: function(options){
@@ -1209,3 +1326,5 @@ Element.implement({
 	}
 
 });
+
+})();
